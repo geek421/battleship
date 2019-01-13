@@ -55,7 +55,7 @@ var model = {
 var controller = {
   guesses: 0,
   processGuess: function(guess) {
-    let location = parseGuess(guess);
+    let location = guessCanculate.parseGuess(guess);
     if (location) {
       this.guesses++;
       let hit = model.fire(location);
@@ -68,41 +68,68 @@ var controller = {
   }
 };
 
-function parseGuess(guess) {
-  let alphabet = ["A", "B", "C", "D", "E", "F", "G"];
-  if (guess === null || guess.length != 2) {
-    view.displayMessage("Oops, please enter a letter and a number on the board.");
-    } else if (contains(model.coordinatesGuesses, guess) === false && model.numShips != model.shipsSunk) {
-        view.displayMessage("You already shot there!");
-        } else if (model.numShips === model.shipsSunk) {
-          view.displayMessage("You already sank all my battleships, in " + controller.guesses + " guesses, return to home, captain!");
+var guessCanculate = {
+    parseGuess: function(guess) {
+    let alphabet = ["A", "B", "C", "D", "E", "F", "G"];
+    let alphabetLow = ["a", "b", "c", "d", "e", "f", "g"];
+    if (guess === null || guess.length != 2) {
+      view.displayMessage("Oops, please enter a letter and a number on the board.");
+    } else if (this.contains(model.coordinatesGuesses, guess) === false && model.numShips != model.shipsSunk) {
+          view.displayMessage("You already shot there!");
+          } else if (model.numShips === model.shipsSunk) {
+            view.displayMessage("You already sank all my battleships, in " + controller.guesses + " guesses, return to home, captain!");
           } else {
-            let firstChar = guess.charAt(0);
-            let row = alphabet.indexOf(firstChar);
-            let column = guess.charAt(1);
-            model.coordinatesGuesses.push(guess);
+              let firstChar = guess.charAt(0);
+              let row = alphabet.indexOf(firstChar);
+              let column = guess.charAt(1);
 
-  if (isNaN(row) || isNaN(column)) {
-    view.displayMessage("Oops, that isn't on the board.");
-      } else if (row < 0 || row >= model.boardSize || column < 0 || column >= model.boardSize) {
-        view.displayMessage("Oops, that's off the board!");
+    if (isNaN(row) || isNaN(column)) {
+      view.displayMessage("Oops, that isn't on the board.");
+    } else if (row < 0 && rowLow < 0 || row >= model.boardSize && rowLow >= model.boardSize || column < 0 || column >= model.boardSize) {
+          view.displayMessage("Oops, that's off the board!");
         } else {
-          /*model.coordinatesGuesses.push(guess);*/
-          return row + column;
-        }
+            model.coordinatesGuesses.push(guess);
+            return row + column;
+          }
+    }
+    return null;
+  },
+
+  contains: function(arr, elem) {
+      for (let i = 0; i < arr.length; i++) {
+          if (arr[i] === elem) {
+              return false;
+          }
+      }
+      return true;
   }
-  return null;
 };
 
-function contains(arr, elem) {
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] === elem) {
-            return false;
-        }
-    }
-    return true;
-}
+var buttonHandle = {
+    init: function() {
+      let fireButton = document.getElementById("fireButton");
+      fireButton.onclick = buttonHandle.handleFireButton;
+      let guessInput = document.getElementById("guessInput");
+      guessInput.onkeypress = buttonHandle.handleKeyPress;
+    },
 
+    handleKeyPress: function(e) {
+        let fireButton = document.getElementById("fireButton");
+        if (e.keyCode === 13) {
+          fireButton.click();
+          return false;
+        }
+    },
+
+    handleFireButton: function() {
+        let guessInput = document.getElementById("guessInput");
+        let guess = guessInput.value;
+        controller.processGuess(guess);
+        guessInput.value = "";
+    }
+  };
+
+window.onload = buttonHandle.init;
 /*
 var randomLoc = Math.floor(Math.random() * 5);
 

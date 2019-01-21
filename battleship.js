@@ -18,6 +18,7 @@ var model = {
           ship.hits[index] = "hit";
           view.displayHit(guess);
           view.displayMessage("HIT!");
+            shot.play();
           if (this.isSunk(ship)) {
             view.displayMessage("You sank my battleship!");
             this.shipsSunk++;
@@ -27,6 +28,7 @@ var model = {
       }
       view.displayMiss(guess);
       view.displayMessage("You missed.");
+      fail.play();
       return false;
     },
     isSunk: function(ship) {
@@ -105,7 +107,7 @@ var controller = {
   guesses: 0,
 
   processGuess: function(guess) {
-    let location = guessCanculate.parseGuess(guess);
+    let location = guessCalculate.parseGuess(guess);
     if (location) {
       this.guesses++;
       let hit = model.fire(location);
@@ -118,7 +120,7 @@ var controller = {
   }
 };
 
-var guessCanculate = {
+var guessCalculate = {
     parseGuess: function(guess) {
     let alphabet = ["A", "B", "C", "D", "E", "F", "G"];
     let alphabetLow = ["a", "b", "c", "d", "e", "f", "g"];
@@ -180,5 +182,14 @@ var buttonHandle = {
         guessInput.value = "";
     }
   };
+  const shot = new Audio("explosion.wav");
+  shot.volume = 0.5;
+  const fail = new Audio("fail.wav");
+  fail.volume = 0.5;
+
+model.__proto__ = view;
+view.__proto__ = controller;
+controller.__proto__ = guessCalculate;
+guessCalculate.__proto__ = buttonHandle;
 
 window.onload = buttonHandle.init;

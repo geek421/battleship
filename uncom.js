@@ -123,15 +123,14 @@ var controller = {
 var guessCalculate = {
     parseGuess: function(guess) {
     let alphabet = ["A", "B", "C", "D", "E", "F", "G"];
-    let alphabetLow = ["a", "b", "c", "d", "e", "f", "g"];
     if (guess === null || guess.length != 2) {
       view.displayMessage("Oops, please enter a letter and a number on the board.");
     } else if (this.contains(model.coordinatesGuesses, guess) === false && model.numShips != model.shipsSunk) {
           view.displayMessage("You already shot there!");
           } else if (model.numShips === model.shipsSunk) {
-            view.displayMessage("You already sank all my battleships, in " + controller.guesses + " guesses, return to home, captain!");
+            view.displayMessage("You already sank all my battleships in " + controller.guesses + " guesses, return to home, captain!");
           } else {
-              let firstChar = guess.charAt(0);
+              let firstChar = guess.charAt(0).toUpperCase();
               let row = alphabet.indexOf(firstChar);
               let column = guess.charAt(1);
 
